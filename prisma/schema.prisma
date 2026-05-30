@@ -1,0 +1,33 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Student {
+  sbd          String  @id @unique
+  toan         Float?
+  ngu_van      Float?
+  ngoai_ngu    Float?
+  vat_li       Float?
+  hoa_hoc      Float?
+  sinh_hoc     Float?
+  lich_su      Float?
+  dia_li       Float?
+  gdcd         Float?
+  ma_ngoai_ngu String?
+
+  @@index([toan, vat_li, hoa_hoc]) // Optimizes Group A leaderboard queries
+}
+
+model SubjectStats {
+  subject         String @id @unique
+  levelExcellent  Int
+  levelGood       Int
+  levelAverage    Int
+  levelPoor       Int
+  totalCandidates Int
+  averageScore    Float
+}
