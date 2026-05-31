@@ -1,14 +1,15 @@
 # G-Scores - Hệ thống Tra cứu và Thống kê Điểm thi THPT Quốc gia 2024
 
-**G-Scores** là một ứng dụng web hiện đại được xây dựng để tra cứu điểm thi cá nhân và phân tích, thống kê dữ liệu điểm thi THPT Quốc gia năm 2024 từ tập dữ liệu hơn 1 triệu thí sinh. Dự án được triển khai bằng **Next.js 16 (App Router)**, **React 19**, **TypeScript**, **Prisma ORM**, **SQLite** và được đóng gói hoàn chỉnh bằng **Docker**.
+**G-Scores** là một ứng dụng web chuyên nghiệp được xây dựng để tra cứu điểm thi cá nhân và phân tích, thống kê dữ liệu điểm thi THPT Quốc gia năm 2024 từ tập dữ liệu hơn 1 triệu thí sinh. Dự án được triển khai bằng **Next.js 16 (App Router)**, **React 19**, **TypeScript**, **Prisma ORM (v7)**, **PostgreSQL (Supabase)** và được đóng gói hoàn chỉnh bằng **Docker**.
 
 ---
 
 ## 🚀 Tính năng nổi bật
 
-1. **Hiệu năng Seed dữ liệu vượt trội (Streaming CSV Parser):**
+1. **Hiệu năng Seed dữ liệu đám mây vượt trội (Streaming CSV Parser):**
    - Đọc dữ liệu từ file CSV khổng lồ bằng cơ chế `ReadStream` dòng dữ liệu chạy tuần tự kết hợp thư viện `readline`.
    - Ghi dữ liệu hàng loạt (Bulk Insert) bằng `prisma.student.createMany` theo từng lô `10,000` dòng dữ liệu để tối ưu tốc độ chèn dữ liệu mà không sợ tràn bộ nhớ RAM.
+   - Sử dụng cơ chế lọc trùng SBD và tính năng chống trùng khóa `skipDuplicates: true` của PostgreSQL để đảm bảo quá trình ghi dữ liệu diễn ra liên tục và an toàn.
    - Tính toán trước các chỉ số thống kê môn học (`SubjectStats`) trong quá trình seed để tối ưu tốc độ hiển thị biểu đồ trên giao diện chính.
 2. **Tra cứu điểm thi theo Số báo danh (SBD):**
    - Hỗ trợ tra cứu điểm thi tức thời.
@@ -28,9 +29,9 @@
 
 ## 🛠️ Công nghệ sử dụng
 
-- **Frontend:** Next.js 16, React 19, Recharts, Lucide Icons, Vanilla CSS thuần.
+- **Frontend:** Next.js 16 (App Router), React 19, Recharts, Lucide Icons, Vanilla CSS thuần.
 - **Backend:** Next.js API Routes (Route Handlers), Lập trình hướng đối tượng (OOP) với TypeScript.
-- **Database & ORM:** SQLite, Prisma ORM.
+- **Database & ORM:** PostgreSQL (Supabase/Neon), Prisma ORM (v7).
 - **DevOps & Containerization:** Docker, Docker Compose.
 
 ---
@@ -40,21 +41,21 @@
 ```text
 ├── dataset/                     # Chứa tệp dữ liệu gốc diem_thi_thpt_2024.csv
 ├── prisma/                      # Cấu hình Prisma ORM
-│   ├── migrations/              # Cánc tệp migration cơ sở dữ liệu
-│   ├── schema.prisma            # Định ghĩa các bảng cơ sở dữ liệu (Student, SubjectStats)
+│   ├── schema.prisma            # Định nghĩa các bảng cơ sở dữ liệu (Student, SubjectStats)
 │   └── seed.ts                  # Logic đọc stream CSV và seed cơ sở dữ liệu
 ├── src/
 │   ├── app/                     # Next.js App Router
 │   │   ├── api/                 # Các API Endpoint (students, stats, group-a)
-│   │   ├── globals.css          # Hệ thống CSS toàn cục (Light Theme)
+│   │   ├── globals.css          # Giao diện CSS toàn cục (Light Theme)
 │   │   ├── layout.tsx           # Layout chung của ứng dụng
 │   │   └── page.tsx             # Giao diện chính Dashboard & Tra cứu
 │   ├── lib/
-│   │   └── db.ts                # Khởi tạo duy nhất Prisma Client instance
+│   │   └── db.ts                # Khởi tạo Prisma Client kết nối PostgreSQL
 │   └── models/
 │       └── subject.ts           # Kiến trúc lập trình hướng đối tượng (OOP ExamSubject)
+├── prisma.config.ts             # File cấu hình của Prisma 7
 ├── Dockerfile                   # Cấu hình Docker build ứng dụng Next.js
-└── docker-compose.yml           # Quản lý container và phân vùng dữ liệu SQLite
+└── docker-compose.yml           # Quản lý container chạy ứng dụng
 ```
 
 ---
@@ -63,7 +64,7 @@
 
 Để tuân thủ yêu cầu bắt buộc sử dụng **Lập trình hướng đối tượng (OOP)** để quản lý các môn học, mã nguồn đã triển khai cấu trúc class rõ ràng tại `src/models/subject.ts`:
 - **`ExamSubject` (Abstract Class):** Chứa các phương thức dùng chung như kiểm tra tính hợp lệ của điểm thi (`isValidScore`) và xếp loại học lực (`classifyLevel`).
-- **`StandardSubject`, `LiteratureSubject`, `ForeignLanguageSubject`:** Các lớp kế thừa từ lớp cha `ExamSubject`, cho phép mở rộng hoặc ghi đè (Override) phương thức riêng biệt cho từng môn cụ thể (ví dụ môn Ngữ văn tự luận hay môn Ngoại ngữ trắc nghiệm).
+- **`StandardSubject`, `LiteratureSubject`, `ForeignLanguageSubject`:** Các lớp kế thừa từ lớp cha `ExamSubject`, cho phép mở rộng hoặc ghi đè (Override) phương thức riêng biệt cho từng môn cụ thể.
 - **`SubjectRegistry`:** Class quản lý tập trung toàn bộ các thực thể môn học, giúp việc khởi tạo và ánh xạ từ mã môn học sang đối tượng OOP diễn ra thống nhất.
 
 ---
@@ -85,18 +86,18 @@ npm install
 ```
 
 ### Bước 2: Thiết lập biến môi trường
-Tạo tệp `.env` tại thư mục gốc của dự án với nội dung cấu hình SQLite:
+Tạo tệp `.env` tại thư mục gốc của dự án và điền thông tin kết nối database PostgreSQL đám mây (ví dụ sử dụng Supabase):
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://postgres.[username]:[YOUR-PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
 ```
 
 ### Bước 3: Đồng bộ cơ sở dữ liệu và Seed dữ liệu gốc
 Đảm bảo bạn đã đặt file dữ liệu gốc `diem_thi_thpt_2024.csv` vào bên trong thư mục `/dataset/` trước khi tiến hành seed.
 ```bash
-# Tạo các bảng cơ sở dữ liệu qua Prisma Migrations
-npx prisma migrate dev --name init
+# Tạo cấu trúc bảng dữ liệu trên Cloud qua Prisma
+npx prisma db push
 
-# Tiến hành seed dữ liệu từ file CSV (Mất khoảng 20-40 giây)
+# Tiến hành seed dữ liệu từ file CSV lên Cloud (Mất khoảng 2-3 phút)
 npx prisma db seed
 ```
 
@@ -117,23 +118,17 @@ npm run start
 
 ---
 
-## 🐳 Hướng dẫn chạy dự án bằng Docker
+## ☁️ Hướng dẫn triển khai lên Vercel
 
-Ứng dụng đã được cấu hình Docker Compose hoàn chỉnh để có thể chạy trên mọi môi trường mà không cần cài đặt Node.js thủ công trên máy host.
+Dự án đã được tối ưu hóa hoàn toàn để triển khai lên **Vercel** chỉ với vài thao tác đơn giản:
 
-```bash
-# Khởi chạy Docker Compose (Tự động build image, chạy migrations và expose ứng dụng)
-docker-compose up --build
-```
-Mở trình duyệt và truy cập: [http://localhost:3000](http://localhost:3000)
+1. **Kết nối mã nguồn:** Đẩy code mới nhất của bạn lên kho lưu trữ GitHub và import dự án vào Vercel.
+2. **Cấu hình biến môi trường:** Trong giao diện cài đặt dự án trên Vercel (**Settings** -> **Environment Variables**), thêm biến môi trường sau:
+   - **Key:** `DATABASE_URL`
+   - **Value:** Điền đường dẫn kết nối PostgreSQL của Supabase giống như trong file `.env` local.
+3. **Cơ chế tự động biên dịch:** Dự án đã được tích hợp tập lệnh tự động chạy `npx prisma generate` trong quá trình build của Vercel (thông qua lệnh `"build"` trong file `package.json`), bảo đảm Prisma Client luôn được cập nhật chính xác trên môi trường Serverless.
 
-*Lưu ý: Volume `prisma-db` được định nghĩa trong file `docker-compose.yml` để đảm bảo cơ sở dữ liệu SQLite của bạn được lưu trữ lâu dài và không bị mất đi khi dừng hoặc xóa container.*
-
----
-
-## 🔗 Demo trực tuyến
-
-- **Demo Link:** [https://g-scores-demo.vercel.app](https://g-scores-demo.vercel.app) *(Hoặc link demo do bạn đã triển khai)*
+Sau khi thiết lập, Vercel sẽ tự động hoàn tất việc build và kích hoạt ứng dụng của bạn trực tuyến.
 
 ---
 
