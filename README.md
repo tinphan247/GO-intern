@@ -1,7 +1,8 @@
-## DEMO LINK : https://go-intern-71jqrrrmt-tinphan247s-projects.vercel.app
 
+**Demo Link:** [https://go-intern-bxmrldqs1-tinphan247s-projects.vercel.app]
+---
 
-## Hướng dẫn chạy dự án Locally
+##  Hướng Dẫn Chạy Dự Án Locally
 
 ### Điều kiện tiên quyết
 - Cài đặt **Node.js** phiên bản `>= 18.0.0`
@@ -9,7 +10,7 @@
 
 ### Bước 1: Tải mã nguồn và cài đặt thư viện
 ```bash
-# Clone dự án từ repository của bạn
+# Clone dự án từ repository
 git clone <repository-url>
 cd webdev-intern-assignment-3-main
 
@@ -47,6 +48,3 @@ npm run build
 # Khởi chạy server production
 npm run start
 ```
-
----
-
