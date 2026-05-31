@@ -1,29 +1,29 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  Loader2, 
-  Award, 
-  AlertTriangle, 
-  TrendingUp, 
-  Zap, 
-  LayoutGrid, 
-  CheckCircle, 
-  Activity, 
-  Sparkles, 
+import {
+  Search,
+  Loader2,
+  Award,
+  AlertTriangle,
+  TrendingUp,
+  Zap,
+  LayoutGrid,
+  CheckCircle,
+  Activity,
+  Sparkles,
   X,
   ChevronRight,
   TrendingDown
 } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
   Cell
 } from 'recharts';
@@ -204,7 +204,7 @@ export default function Dashboard() {
       <header className="header">
         <div className="logo-container">
           <Zap className="logo-icon" size={24} />
-          <h1 className="logo-text">WATT-VISION G-SCORES</h1>
+          <h1 className="logo-text">G-SCORES</h1>
         </div>
         <div className="live-badge">
           <span className="live-dot"></span>
@@ -222,7 +222,7 @@ export default function Dashboard() {
             </div>
             <div className="kpi-sub">Tổng số hồ sơ trong hệ thống</div>
           </div>
-          
+
           <div className="kpi-card green">
             <div>
               <div className="kpi-label">{"Tỉ lệ bài thi giỏi (>=8.0)"}</div>
@@ -318,10 +318,10 @@ export default function Dashboard() {
                   </div>
 
                   {/* Summary Performance Section */}
-                  <div style={{ 
-                    background: 'rgba(255,255,255,0.02)', 
-                    padding: '20px', 
-                    borderRadius: '12px', 
+                  <div style={{
+                    background: 'var(--bg-primary)',
+                    padding: '20px',
+                    borderRadius: '12px',
                     border: '1px solid var(--border-subtle)',
                     display: 'grid',
                     gridTemplateColumns: 'repeat(4, 1fr)',
@@ -386,18 +386,18 @@ export default function Dashboard() {
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
                       <XAxis dataKey="name" stroke="var(--text-sec)" tick={{ fill: 'var(--text-sec)', fontSize: 12 }} />
                       <YAxis stroke="var(--text-sec)" tick={{ fill: 'var(--text-sec)', fontSize: 12 }} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'var(--bg-card)', 
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'var(--bg-card)',
                           borderColor: 'var(--border-subtle)',
                           borderRadius: '8px',
-                          color: '#fff'
-                        }} 
+                          color: 'var(--text-main)'
+                        }}
                       />
                       <Legend wrapperStyle={{ fontSize: 12, color: 'var(--text-main)' }} />
                       <Bar dataKey="Giỏi (>=8)" fill="var(--accent-green)" radius={[4, 4, 0, 0]} />
                       <Bar dataKey="Khá (6-8)" fill="var(--accent-cyan)" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="Trung bình (4-6)" fill="rgba(255, 255, 255, 0.4)" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Trung bình (4-6)" fill="#cbd5e1" radius={[4, 4, 0, 0]} />
                       <Bar dataKey="Yếu (<4)" fill="var(--accent-red)" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>

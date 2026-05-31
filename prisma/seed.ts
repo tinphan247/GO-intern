@@ -52,6 +52,8 @@ async function main() {
     };
   }
 
+  const processedSbds = new Set<string>();
+
   console.log('Streaming and parsing CSV dataset line-by-line...');
 
   for await (const line of rl) {
@@ -63,8 +65,13 @@ async function main() {
     if (!line.trim()) continue;
 
     const parts = line.split(',');
-    const sbd = parts[0];
+    const sbd = parts[0] ? parts[0].trim() : '';
     if (!sbd) continue;
+
+    if (processedSbds.has(sbd)) {
+      continue;
+    }
+    processedSbds.add(sbd);
 
     const student: any = { sbd };
 
@@ -114,7 +121,8 @@ async function main() {
     if (buffer.length >= BATCH_SIZE) {
       await prisma.student.createMany({
         data: buffer,
-      });
+        skipDuplicates: true,
+      } as any);
       buffer = [];
       if (totalCount % 100000 === 0) {
         console.log(`Seeded ${totalCount} records...`);
@@ -126,7 +134,8 @@ async function main() {
   if (buffer.length > 0) {
     await prisma.student.createMany({
       data: buffer,
-    });
+      skipDuplicates: true,
+    } as any);
   }
 
   console.log(`Successfully seeded ${totalCount} student records.`);
